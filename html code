@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tic-Tac-Toe Game</title>
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+  }
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  .cell.used {
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="game" class="grid"></div>
+<script>
+  const game = document.getElementById('game');
+  let currentPlayer = 'X';
+  const gameState = Array(9).fill(null);
+
+  const checkWinner = () => {
+    const lines = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+      [0, 4, 8], [2, 4, 6]  // diagonals
+    ];
+
+    for (let line of lines) {
+      const [a, b, c] = line;
+      if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+        return gameState[a];
+      }
+    }
+    return null;
+  };
+
+  const handleClick = (index) => {
+    gameState[index] = currentPlayer;
+    draw();
+    const winner = checkWinner();
+    if (winner) {
+      alert(`Player ${winner} wins!`);
+      game.innerHTML = ''; // Clear the game
+      initializeGame(); // Restart game
+    } else if (!gameState.includes(null)) {
+      alert("It's a draw!");
+      game.innerHTML = '';
+      initializeGame();
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+  };
+
+  const draw = () => {
+    game.innerHTML = '';
+    gameState.forEach((cell, index) => {
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'cell';
+      cellDiv.textContent = cell;
+      cellDiv.onclick = () => handleClick(index);
+      if (cell) {
+        cellDiv.classList.add('used');
+      }
+      game.appendChild(cellDiv);
+    });
+  };
+
+  const initializeGame = () => {
+    gameState.fill(null);
+    currentPlayer = 'X';
+    draw();
+  };
+
+  initializeGame();
+</script>
+</body>
+</html>
